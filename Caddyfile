@@ -1,0 +1,13 @@
+# ============ LAPTOP MODE (default) ============
+# Plain HTTP on port 80 (only used if you run the edge profile locally).
+:80 {
+	reverse_proxy api:8000
+}
+
+# ============ CLOUD MODE ============
+# On the VPS: DELETE the block above, uncomment this one, and put your
+# real domain in. Caddy fetches + renews the HTTPS certificate by itself.
+#
+# yourname.duckdns.org {
+# 	reverse_proxy api:8000
+# }

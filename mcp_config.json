@@ -1,0 +1,123 @@
+{
+  "_comment": "MCP servers Jarvis connects to on startup. Each tool is registered through Jarvis's security gate. Set enabled:false to skip one. Most servers need their own credentials in env.",
+  "servers": [
+    {
+      "name": "filesystem",
+      "enabled": true,
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/data/jarvis-files",
+        "/data/documents",
+        "/data/projects"
+      ],
+      "default_policy": "confirm",
+      "tool_policies": {
+        "read_file": "auto",
+        "read_text_file": "auto",
+        "read_media_file": "auto",
+        "list_directory": "auto",
+        "directory_tree": "auto",
+        "search_files": "auto",
+        "get_file_info": "auto",
+        "list_allowed_directories": "auto"
+      }
+    },
+    {
+      "name": "github",
+      "enabled": true,
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_put_your_token_here"
+      },
+      "default_policy": "confirm",
+      "tool_policies": {
+        "search_repositories": "auto",
+        "get_file_contents": "auto",
+        "list_issues": "auto",
+        "get_issue": "auto",
+        "list_commits": "auto",
+        "search_code": "auto"
+      }
+    },
+    {
+      "name": "fetch",
+      "enabled": true,
+      "command": "uvx",
+      "args": [
+        "mcp-server-fetch"
+      ],
+      "default_policy": "auto",
+      "tool_policies": {
+        "fetch": "auto"
+      }
+    },
+    {
+      "name": "git",
+      "enabled": true,
+      "command": "uvx",
+      "args": [
+        "mcp-server-git",
+        "--repository",
+        "/data/projects"
+      ],
+      "default_policy": "confirm",
+      "tool_policies": {
+        "git_status": "auto",
+        "git_log": "auto",
+        "git_diff": "auto",
+        "git_diff_unstaged": "auto",
+        "git_diff_staged": "auto",
+        "git_show": "auto",
+        "git_branch": "auto"
+      }
+    },
+    {
+      "name": "gmail",
+      "enabled": true,
+      "command": "npx",
+      "args": [
+        "-y",
+        "@gongrzhe/server-gmail-autoauth-mcp"
+      ],
+      "env": {
+        "GMAIL_OAUTH_PATH": "/data/google/gcp-oauth.keys.json",
+        "GMAIL_CREDENTIALS_PATH": "/data/google/credentials.json"
+      },
+      "default_policy": "confirm",
+      "tool_policies": {
+        "search_emails": "auto",
+        "read_email": "auto",
+        "list_emails": "auto",
+        "get_email": "auto",
+        "list_labels": "auto"
+      }
+    },
+    {
+      "name": "gcalendar",
+      "enabled": true,
+      "command": "npx",
+      "args": [
+        "-y",
+        "@cocal/google-calendar-mcp"
+      ],
+      "env": {
+        "GOOGLE_OAUTH_CREDENTIALS": "/data/google/gcp-oauth.keys.json"
+      },
+      "default_policy": "confirm",
+      "tool_policies": {
+        "list-calendars": "auto",
+        "list-events": "auto",
+        "search-events": "auto",
+        "get-event": "auto",
+        "list_calendars": "auto",
+        "list_events": "auto"
+      }
+    }
+  ]
+}

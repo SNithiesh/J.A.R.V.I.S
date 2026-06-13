@@ -1,0 +1,107 @@
+services:
+  api:
+    build: ./backend
+    env_file: .env
+<<<<<<< HEAD
+    volumes:
+      - ./jarvis-files:/data/jarvis-files
+      - C:\Users\mksni\Documents:/data/documents
+      - C:\Users\mksni\Downloads:/data/downloads          # writable scratch sandbox
+      - ./google-creds:/data/google
+      - ./mcp_config.json:/srv/mcp_config.json
+      - ./google-creds/calendar-tokens:/root/.config/google-calendar-mcp                # your Google OAuth json goes here (gitignored)
+      # === your real folders for the MCP filesystem server ===
+      # EDIT these host paths to match your machine, then enable filesystem in mcp_config.json.
+      # ":ro" = read-only (Jarvis can look but never modify/delete).
+      - C:\Users\mksni\Documents:/data/documents:ro    # read-only: searchable, safe
+      - C:\Users\mksni\Desktop\projects:/data/projects # writable (writes/deletes still ask your phone)
+=======
+>>>>>>> a5251db89176e88f796c8567ca2ed924368c254c
+    ports:
+      # Laptop (default 0.0.0.0): reachable over Tailscale.
+      # Cloud: set API_BIND=127.0.0.1 in .env so the ONLY way in is
+      # through Caddy's HTTPS — Docker-published ports bypass UFW,
+      # so never leave this on 0.0.0.0 on a public server.
+      - "${API_BIND:-0.0.0.0}:8000:8000"
+<<<<<<< HEAD
+      - "3500:3500"
+=======
+>>>>>>> a5251db89176e88f796c8567ca2ed924368c254c
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: jarvis
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-jarvis}
+      POSTGRES_DB: jarvis
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jarvis"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  # The edge profile is the local/cloud switch in action:
+  #   laptop:  docker compose up                      (api on localhost:8000)
+  #   cloud:   docker compose --profile edge up       (Caddy terminates TLS in front)
+  caddy:
+    image: caddy:2-alpine
+    profiles: ["edge"]
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+    depends_on:
+      - api
+    restart: unless-stopped
+
+<<<<<<< HEAD
+  # Nightly database backup. Same image as postgres so pg_dump versions match.
+  # Loops: back up, then sleep BACKUP_INTERVAL_HOURS, forever.
+  backup:
+    image: pgvector/pgvector:pg16
+    env_file: .env
+    volumes:
+      - ./deploy/backup.sh:/backup.sh:ro
+      - ./backups:/backups
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: ["/bin/sh","-c"]
+    command:
+      - |
+        echo "[backup] service started; interval=${BACKUP_INTERVAL_HOURS:-24}h"
+        while true; do
+          sh /backup.sh || echo "[backup] run failed (non-fatal)";
+          sleep "$$(( ${BACKUP_INTERVAL_HOURS:-24} * 3600 ))";
+        done
+    restart: unless-stopped
+
+=======
+>>>>>>> a5251db89176e88f796c8567ca2ed924368c254c
+volumes:
+  pgdata:
+  redisdata:
+  caddydata:

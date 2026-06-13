@@ -1,0 +1,27 @@
+# ==== Secrets — never commit ====
+.env
+.env.local
+google-creds/
+*.key
+*-token.json
+tokens.json
+
+# ==== Backups (data, not code) ====
+backups/*.sql.gz
+
+# ==== Python ====
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+
+# ==== Node ====
+node_modules/
+
+# ==== OS / editor junk ====
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
